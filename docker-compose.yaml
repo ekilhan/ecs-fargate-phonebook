@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+    mysql:
+        image: mysql:8
+        environment:
+            MYSQL_ROOT_PASSWORD: cloud123
+            MYSQL_DATABASE: phonebook_db
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: admin123
+        volumes:
+      		- ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - cloudnet
+    myapp:
+        image: 114195610881.dkr.ecr.eu-west-1.amazonaws.com/flask-phone:latest
+        depends_on:
+            - mysql
+        environment:
+            MYSQL_DATABASE_HOST: mysql
+            MYSQL_DATABASE_PORT: 3306      
+        restart: always
+        ports:
+            - "5000:5000"
+        networks:
+            - cloudnet
+
+networks:
+    cloudnet:
+        driver: bridge
