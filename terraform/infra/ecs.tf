@@ -6,7 +6,28 @@ resource "aws_ecs_cluster" "main" {
     Name = "${var.app_name}-cluster"
   }
 }
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
 
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = var.public_subnet_ids[0]
+
+  tags = {
+    Name = "${var.app_name}-nat-gw"
+  }
+
+  depends_on = [aws_eip.nat]
+}
+
+resource "aws_route" "private_internet_access" {
+  route_table_id         = "rtb-0b3b4d6d8457577b2"
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.main.id
+
+  depends_on = [aws_nat_gateway.main]
+}
 # IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs-task-execution-role" {
   name = "${var.app_name}-ecs-task-execution-role"
