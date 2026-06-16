@@ -27,7 +27,11 @@ resource "aws_instance" "Jenkins-Server" {
   key_name      = var.key_name
   vpc_security_group_ids = [aws_security_group.js-sg.id]
   user_data     = file("scripts/jenkins-setup.sh")
-
+    
+  root_block_device {
+   volume_size = 20
+   volume_type = "gp3"
+  }
   tags = {
     Name = "Jenkins-Server"
   }
