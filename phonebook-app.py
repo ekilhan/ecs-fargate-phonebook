@@ -1,12 +1,10 @@
 # Import Flask modules
 from flask import Flask, request, render_template
 from flaskext.mysql import MySQL
-from prometheus_flask_exporter import PrometheusMetrics
 import os
 
 # Create an object named app
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
 
 # Configure mysql database
 developer_name = os.environ.get("DEVELOPER_NAME", "Sıfırdan Zirveye Team")
@@ -19,7 +17,7 @@ app.config['MYSQL_DATABASE_PORT'] = int(os.environ.get("MYSQL_PORT", "3306"))
 mysql = MySQL()
 mysql.init_app(app)
 
-# Bağlantıyı istek geldiğinde kur, uygulama başında değil
+
 def get_db():
     connection = mysql.connect()
     connection.autocommit(True)
