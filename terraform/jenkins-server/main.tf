@@ -27,6 +27,7 @@ resource "aws_instance" "Jenkins-Server" {
   key_name      = var.key_name
   vpc_security_group_ids = [aws_security_group.js-sg.id]
   user_data     = file("scripts/jenkins-setup.sh")
+  iam_instance_profile   = aws_iam_instance_profile.jenkins.name
     
   root_block_device {
    volume_size = 20
@@ -69,4 +70,27 @@ resource "aws_security_group" "js-sg" {
 resource "aws_eip" "js-eip" {
   instance = aws_instance.Jenkins-Server.id
   domain   = "vpc"
+}
+
+resource "aws_iam_instance_profile" "jenkins" {
+  name = "jenkins-ec2-profile"
+  role = aws_iam_role.jenkins_role.name
+}
+
+resource "aws_iam_role" "jenkins_role" {
+  name = "jenkins-ec2-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins_ecr_ecs" {
+  role       = aws_iam_role.jenkins_role.name
+  policy_arn = "arn:aws:iam::346690756498:policy/jenkins-ecr-ecs-policy"
 }
