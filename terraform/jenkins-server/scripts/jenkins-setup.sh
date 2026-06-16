@@ -12,22 +12,27 @@ dnf install -y java-21-amazon-corretto
 wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
 
-# Install and enable Jenkins
-dnf install -y jenkins
-systemctl enable jenkins
-systemctl start jenkins
-
-# Install Git
-dnf install -y git
-
-# Install and enable Docker
+# Install docker and Jenkins
 dnf install -y docker
-systemctl enable docker
-systemctl start docker
+dnf install -y jenkins
 
 # Add jenkins and ec2-user to docker group
 usermod -aG docker jenkins
 usermod -aG docker ec2-user
+
+# Enable and start Jenkins 
+systemctl enable jenkins
+systemctl start jenkins
+
+
+# Enable and start Docker
+
+systemctl enable docker
+systemctl start docker
+
+# Install Git
+dnf install -y git
+
 
 # Update AWS CLI
 dnf install -y awscli
