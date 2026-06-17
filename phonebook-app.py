@@ -17,25 +17,29 @@ app.config['MYSQL_DATABASE_PORT'] = int(os.environ.get("MYSQL_PORT", "3306"))
 mysql = MySQL()
 mysql.init_app(app)
 
+# Initialize database table on startup
+with app.app_context():
+    try:
+        conn = mysql.connect()
+        conn.autocommit(True)
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS phonebook(
+            id INT NOT NULL AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL,
+            number VARCHAR(100) NOT NULL,
+            PRIMARY KEY (id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        """)
+    except Exception as e:
+        print(f"DB init error: {e}")
+
 
 def get_db():
     connection = mysql.connect()
     connection.autocommit(True)
     cursor = connection.cursor()
     return cursor
-
-
-def init_phonebook_db():
-    cursor = get_db()
-    phonebook_table = """
-    CREATE TABLE IF NOT EXISTS phonebook_db.phonebook(
-    id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    number VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    """
-    cursor.execute(phonebook_table)
 
 
 def find_persons(keyword):
@@ -165,5 +169,4 @@ def delete_record():
 
 
 if __name__ == '__main__':
-    init_phonebook_db()
     app.run(host='0.0.0.0', port=5000)
