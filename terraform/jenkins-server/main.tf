@@ -21,6 +21,8 @@ provider "aws" {
   region = var.aws_region
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_instance" "Jenkins-Server" {
   ami           = var.ami_id
   instance_type = var.instance_type
