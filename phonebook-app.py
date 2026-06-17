@@ -17,8 +17,8 @@ app.config['MYSQL_DATABASE_PORT'] = int(os.environ.get("MYSQL_PORT", "3306"))
 mysql = MySQL()
 mysql.init_app(app)
 
-# Initialize database table on startup
-with app.app_context():
+@app.before_request
+def init_db():
     try:
         conn = mysql.connect()
         conn.autocommit(True)
