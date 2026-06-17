@@ -1,1 +1,3 @@
 terraform/infra/terraform.tfvars
+.terraform/
+.terraform.lock.hcl
