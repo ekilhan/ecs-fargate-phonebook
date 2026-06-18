@@ -1,0 +1,2 @@
+terraform/infra/terraform.tfvars
+terraform/jenkins-server/terraform.tfvars
